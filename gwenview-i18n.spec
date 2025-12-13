@@ -1,12 +1,12 @@
-#
-# Please submit bugfixes or comments via http://www.trinitydesktop.org/
-#
+%bcond clang 1
 
 # TDE variables
 %define tde_epoch 2
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
+%define pkg_rel 2
+
 %define tde_pkg gwenview-i18n
 %define tde_prefix /opt/trinity
 %define tde_appdir %{tde_datadir}/applications
@@ -21,32 +21,25 @@
 %define tde_tdeincludedir %{tde_includedir}/tde
 %define tde_tdelibdir %{tde_libdir}/trinity
 
-%if 0%{?mdkversion}
 %undefine __brp_remove_la_files
 %define dont_remove_libtool_files 1
 %define _disable_rebuild_configure 1
-%endif
 
 # fixes error: Empty %files file …/debugsourcefiles.list
 %define _debugsource_template %{nil}
 
 %define tarball_name %{tde_pkg}-trinity
-%global toolchain %(readlink /usr/bin/cc)
 
 
 Name:			trinity-%{tde_pkg}
 Epoch:			%{tde_epoch}
 Version:		1.4.2
-Release:		%{?tde_version}_%{?!preversion:1}%{?preversion:0_%{preversion}}%{?dist}
+Release:		%{?tde_version}_%{?!preversion:%{pkg_rel}}%{?preversion:0_%{preversion}}%{?dist}
 Summary:		Internationalization support for Gwenview [Trinity]
 Group:			Applications/Utilities
 URL:			http://www.trinitydesktop.org/
 
-%if 0%{?suse_version}
-License:	GPL-2.0+
-%else
 License:	GPLv2+
-%endif
 
 #Vendor:		Trinity Desktop
 #Packager:	Francois Andriot <francois.andriot@free.fr>
@@ -55,7 +48,16 @@ BuildArch:	noarch
 
 Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/applications/graphics/%{tarball_name}-%{tde_version}%{?preversion:~%{preversion}}.tar.xz
 
-BuildRequires:  cmake make
+BuildSystem:    cmake
+BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
+BuildOption:    -DCMAKE_INSTALL_PREFIX="%{tde_prefix}"
+BuildOption:    -DBIN_INSTALL_DIR="%{tde_bindir}"
+BuildOption:    -DINCLUDE_INSTALL_DIR="%{tde_tdeincludedir}"
+BuildOption:    -DLIB_INSTALL_DIR="%{tde_libdir}"
+BuildOption:    -DPKGCONFIG_INSTALL_DIR="%{tde_libdir}/pkgconfig"
+BuildOption:    -DSHARE_INSTALL_PREFIX="%{tde_datadir}"
+BuildOption:    -DBUILD_ALL=ON -DBUILD_DOC=ON -DBUILD_TRANSLATIONS=ON
+
 BuildRequires:	trinity-tdelibs-devel >= %{tde_version}
 BuildRequires:	trinity-tdebase-devel >= %{tde_version}
 BuildRequires:	desktop-file-utils
@@ -63,20 +65,10 @@ BuildRequires:	desktop-file-utils
 BuildRequires:	gettext
 
 BuildRequires:	trinity-tde-cmake >= %{tde_version}
-%if "%{?toolchain}" != "clang"
-BuildRequires:	gcc-c++
-%endif
+
+%{!?with_clang:BuildRequires:	gcc-c++}
+
 BuildRequires:	pkgconfig
-
-# SUSE desktop files utility
-%if 0%{?suse_version}
-BuildRequires:	update-desktop-files
-%endif
-
-%if 0%{?opensuse_bs} && 0%{?suse_version}
-# for xdg-menu script
-BuildRequires:	brp-check-trinity
-%endif
 
 
 %description
@@ -93,51 +85,12 @@ converting, and batch processing, HTML gallery and others are provided by the
 KIPI image framework.
 
 
-##########
-
-%if 0%{?suse_version} && 0%{?opensuse_bs} == 0
-%debug_package
-%endif
-
-##########
-
-
-%prep
-%autosetup -n %{tarball_name}-%{tde_version}%{?preversion:~%{preversion}}
-
-
-%build
+%conf -p
 unset QTDIR QTINC QTLIB
 export PATH="%{tde_bindir}:${PATH}"
 
-if ! rpm -E %%cmake|grep -e 'cd build\|cd ${CMAKE_BUILD_DIR:-build}'; then
-  %__mkdir_p build
-  cd build
-fi
 
-%cmake \
-  -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
-  -DCMAKE_VERBOSE_MAKEFILE=ON \
-  \
-  -DCMAKE_INSTALL_PREFIX="%{tde_prefix}" \
-  -DBIN_INSTALL_DIR="%{tde_bindir}" \
-  -DINCLUDE_INSTALL_DIR="%{tde_tdeincludedir}" \
-  -DLIB_INSTALL_DIR="%{tde_libdir}" \
-  -DPKGCONFIG_INSTALL_DIR="%{tde_libdir}/pkgconfig" \
-  -DSHARE_INSTALL_PREFIX="%{tde_datadir}" \
-  \
-  -DBUILD_ALL=ON \
-  -DBUILD_DOC=ON \
-  -DBUILD_TRANSLATIONS=ON \
-  ..
-
-%__make %{?_smp_mflags}
-
-
-%install
-export PATH="%{tde_bindir}:${PATH}"
-%__make install DESTDIR=%{buildroot} -C build
-
+%install -a
 ## File lists
 %find_lang gwenview
 
