@@ -9,17 +9,7 @@
 
 %define tde_pkg gwenview-i18n
 %define tde_prefix /opt/trinity
-%define tde_appdir %{tde_datadir}/applications
-%define tde_bindir %{tde_prefix}/bin
-%define tde_datadir %{tde_prefix}/share
-%define tde_docdir %{tde_datadir}/doc
-%define tde_includedir %{tde_prefix}/include
-%define tde_libdir %{tde_prefix}/%{_lib}
-%define tde_mandir %{tde_datadir}/man
-%define tde_tdeappdir %{tde_datadir}/applications/tde
-%define tde_tdedocdir %{tde_docdir}/tde
-%define tde_tdeincludedir %{tde_includedir}/tde
-%define tde_tdelibdir %{tde_libdir}/trinity
+
 
 %undefine __brp_remove_la_files
 %define dont_remove_libtool_files 1
@@ -41,21 +31,18 @@ URL:			http://www.trinitydesktop.org/
 
 License:	GPLv2+
 
-#Vendor:		Trinity Desktop
-#Packager:	Francois Andriot <francois.andriot@free.fr>
 
 BuildArch:	noarch
 
 Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/applications/graphics/%{tarball_name}-%{tde_version}%{?preversion:~%{preversion}}.tar.xz
 
 BuildSystem:    cmake
+
 BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
-BuildOption:    -DCMAKE_INSTALL_PREFIX="%{tde_prefix}"
-BuildOption:    -DBIN_INSTALL_DIR="%{tde_bindir}"
-BuildOption:    -DINCLUDE_INSTALL_DIR="%{tde_tdeincludedir}"
-BuildOption:    -DLIB_INSTALL_DIR="%{tde_libdir}"
-BuildOption:    -DPKGCONFIG_INSTALL_DIR="%{tde_libdir}/pkgconfig"
-BuildOption:    -DSHARE_INSTALL_PREFIX="%{tde_datadir}"
+BuildOption:    -DCMAKE_INSTALL_PREFIX=%{tde_prefix}
+BuildOption:    -DINCLUDE_INSTALL_DIR=%{tde_prefix}/include/tde
+BuildOption:    -DPKGCONFIG_INSTALL_DIR=%{tde_prefix}/%{_lib}/pkgconfig
+BuildOption:    -DSHARE_INSTALL_PREFIX=%{tde_prefix}/share
 BuildOption:    -DBUILD_ALL=ON -DBUILD_DOC=ON -DBUILD_TRANSLATIONS=ON
 
 BuildRequires:	trinity-tdelibs-devel >= %{tde_version}
@@ -87,7 +74,7 @@ KIPI image framework.
 
 %conf -p
 unset QTDIR QTINC QTLIB
-export PATH="%{tde_bindir}:${PATH}"
+export PATH="%{tde_prefix}/bin:${PATH}"
 
 
 %install -a
@@ -98,15 +85,15 @@ export PATH="%{tde_bindir}:${PATH}"
 %files -f gwenview.lang
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING
-%lang(da) %{tde_tdedocdir}/HTML/da/gwenview/
-%lang(de) %{tde_tdedocdir}/HTML/de/gwenview/
-%lang(et) %{tde_tdedocdir}/HTML/et/gwenview/
-%lang(fr) %{tde_tdedocdir}/HTML/fr/gwenview/
-%lang(it) %{tde_tdedocdir}/HTML/it/gwenview/
-%lang(nl) %{tde_tdedocdir}/HTML/nl/gwenview/
-%lang(pl) %{tde_tdedocdir}/HTML/pl/gwenview/
-%lang(pt) %{tde_tdedocdir}/HTML/pt/gwenview/
-%lang(pt_BR) %{tde_tdedocdir}/HTML/pt_BR/gwenview/
-%lang(ru) %{tde_tdedocdir}/HTML/ru/gwenview/
-%lang(sv) %{tde_tdedocdir}/HTML/sv/gwenview/
+%lang(da) %{tde_prefix}/share/doc/tde/HTML/da/gwenview/
+%lang(de) %{tde_prefix}/share/doc/tde/HTML/de/gwenview/
+%lang(et) %{tde_prefix}/share/doc/tde/HTML/et/gwenview/
+%lang(fr) %{tde_prefix}/share/doc/tde/HTML/fr/gwenview/
+%lang(it) %{tde_prefix}/share/doc/tde/HTML/it/gwenview/
+%lang(nl) %{tde_prefix}/share/doc/tde/HTML/nl/gwenview/
+%lang(pl) %{tde_prefix}/share/doc/tde/HTML/pl/gwenview/
+%lang(pt) %{tde_prefix}/share/doc/tde/HTML/pt/gwenview/
+%lang(pt_BR) %{tde_prefix}/share/doc/tde/HTML/pt_BR/gwenview/
+%lang(ru) %{tde_prefix}/share/doc/tde/HTML/ru/gwenview/
+%lang(sv) %{tde_prefix}/share/doc/tde/HTML/sv/gwenview/
 
