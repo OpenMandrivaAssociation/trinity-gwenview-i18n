@@ -1,12 +1,6 @@
 %bcond clang 1
 
 # TDE variables
-%define tde_epoch 2
-%if "%{?tde_version}" == ""
-%define tde_version 14.1.5
-%endif
-%define pkg_rel 2
-
 %define tde_pkg gwenview-i18n
 %define tde_prefix /opt/trinity
 
@@ -16,15 +10,14 @@
 %define _disable_rebuild_configure 1
 
 # fixes error: Empty %files file …/debugsourcefiles.list
-%define _debugsource_template %{nil}
+%undefine _debugsource_template
 
 %define tarball_name %{tde_pkg}-trinity
 
 
 Name:			trinity-%{tde_pkg}
-Epoch:			%{tde_epoch}
-Version:		1.4.2
-Release:		%{?tde_version}_%{?!preversion:%{pkg_rel}}%{?preversion:0_%{preversion}}%{?dist}
+Version:		14.1.6
+Release:		1
 Summary:		Internationalization support for Gwenview [Trinity]
 Group:			Applications/Utilities
 URL:			http://www.trinitydesktop.org/
@@ -34,7 +27,7 @@ License:	GPLv2+
 
 BuildArch:	noarch
 
-Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/applications/graphics/%{tarball_name}-%{tde_version}%{?preversion:~%{preversion}}.tar.xz
+Source0:		https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{version}/main/applications/graphics/%{tarball_name}-%{version}.tar.xz
 
 BuildSystem:    cmake
 
@@ -45,13 +38,13 @@ BuildOption:    -DPKGCONFIG_INSTALL_DIR=%{tde_prefix}/%{_lib}/pkgconfig
 BuildOption:    -DSHARE_INSTALL_PREFIX=%{tde_prefix}/share
 BuildOption:    -DBUILD_ALL=ON -DBUILD_DOC=ON -DBUILD_TRANSLATIONS=ON
 
-BuildRequires:	trinity-tdelibs-devel >= %{tde_version}
-BuildRequires:	trinity-tdebase-devel >= %{tde_version}
+BuildRequires:	trinity-tdelibs-devel >= %{version}
+BuildRequires:	trinity-tdebase-devel >= %{version}
+BuildRequires:	trinity-tde-cmake >= %{version}
+
 BuildRequires:	desktop-file-utils
 
 BuildRequires:	gettext
-
-BuildRequires:	trinity-tde-cmake >= %{tde_version}
 
 %{!?with_clang:BuildRequires:	gcc-c++}
 
